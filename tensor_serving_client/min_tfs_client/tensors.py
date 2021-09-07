@@ -19,7 +19,7 @@ def write_values_to_tensor_proto(
 ) -> TensorProto:
     proto_field = getattr(tensor_proto, f"{dtype.proto_field_name}")
     if dtype.is_numeric:
-        proto_field.extend([v.item() for v in values])
+        proto_field.extend(values)
     else:
         proto_field.extend([coerce_to_bytes(v) for v in values])
     # OVMS is expecting tensor_content to be filled with the bytes, therefore we added this,
