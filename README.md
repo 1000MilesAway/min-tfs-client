@@ -7,12 +7,6 @@ Communicating with Tensorflow models via Tensor Serving requires [gRPC](https://
 
 This package exposes a minimal Tensor Serving client that does not include Tensorflow as a dependency. This reduces the overall package size to < 1 Mb. This is particularly useful when deploying web services via AWS Lambda that need to communicate with Tensorflow Serving, as Lambda carries a size limit on deployments.
 
-## Install from PyPi
-This is the quickest way to get started! Just run:
-
-```Bash
-pip install min-tfs-client
-```
 
 ## Installing from source
 Installation from source will require the protobuf compiler `protoc` to be installed and available to the command line (e.g. via the `PATH` environment variable). The protobuf compiler can be downloaded from the [protocolbuffers/protobuf](https://github.com/protocolbuffers/protobuf/releases) Github repo. Once `protoc` is installed and available, you can run:
@@ -24,11 +18,19 @@ python3 setup.py compile_pb copy_grpc
 pip3 install .
 ```
 
-## Development Installation
-For dev installation, run `pip install -e .` instead of `pip install .`. Also, you will require `tensorflow-model-server` and `tensorflow` to be installed to run and modify the integration tests. Specifically:
+## Dockerfile installation 
 
-1. `tensorflow` is required to run the model generation script (`tests/integration/fixtures`) that creates a test model for integration testing. It is **not** required to just run the tests.
-2. `tensorflow-model-server` is required to serve the model to perform the integration test. The commands that are used to run these tests in Travis are contained in `.travis.yml`.
+```Dockerfile
+RUN apt-get update && \
+    apt-get install -y git \
+    protobuf-compiler
+
+RUN pip3 install --no-cache-dir --no-dependencies \
+    tensorflow-serving-api==2.5.1
+
+RUN git clone https://github.com/1000MilesAway/min-tfs-client
+RUN cd min-tfs-client && python3 setup.py compile_pb copy_grpc && pip3 install .
+```
 
 ## Usage
 Basic Usage
