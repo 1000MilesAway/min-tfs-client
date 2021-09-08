@@ -54,4 +54,4 @@ def tensor_proto_to_ndarray(tensor_proto: TensorProto) -> np.ndarray:
     # of tensor_proto, such as float16, float32 etc.
     # It seems in our case we don't need to handle those cases since OVMS will not return those types.
     proto_values = getattr(tensor_proto, dtype.proto_field_name)
-    return np.array([element for element in proto_values], dtype=dtype.numpy_dtype).reshape(*shape)
+    return np.array(proto_values, dtype=dtype.numpy_dtype).reshape(*shape)
