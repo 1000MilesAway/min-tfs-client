@@ -31,6 +31,7 @@ class TensorServingClient:
             self._channel = grpc.secure_channel(self._host_address, credentials)
         else:
             self._channel = grpc.insecure_channel(self._host_address)
+        self.stub = PredictionServiceStub(self._channel)
 
     def _make_inference_request(
         self,
@@ -40,7 +41,7 @@ class TensorServingClient:
         timeout: int,
         model_version: Optional[int],
     ) -> ResponseTypes:
-        stub = PredictionServiceStub(self._channel)
+
         request = request_pb()
         request.model_spec.name = model_name
 
@@ -49,7 +50,7 @@ class TensorServingClient:
 
         for k, v in input_dict.items():
             request.inputs[k].CopyFrom(ndarray_to_tensor_proto(v))
-        return stub.Predict(request, timeout)
+        return self.stub.Predict(request, timeout)
 
     def predict_request(
         self,
