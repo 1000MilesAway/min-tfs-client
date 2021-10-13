@@ -25,7 +25,8 @@ ResponseTypes = Union[PredictResponse, ClassificationResponse, RegressionRespons
 class TensorServingClient:
     def __init__(self, host: str, port: int) -> None:
         self._host_address = f"{host}:{port}"
-        self._channel = grpc.insecure_channel(self._host_address)
+        _channel = grpc.insecure_channel(self._host_address)
+        self.stub = PredictionServiceStub(_channel)
 
     def _make_inference_request(
         self,
@@ -38,14 +39,13 @@ class TensorServingClient:
 
         request = request_pb()
         request.model_spec.name = model_name
-        stub = PredictionServiceStub(self._channel)
 
         if model_version is not None:
             request.model_spec.version.value = model_version
 
         for k, v in input_dict.items():
             request.inputs[k].CopyFrom(ndarray_to_tensor_proto(v))
-        return stub.Predict(request, timeout)
+        return self.stub.Predict(request, 0)
 
     def predict_request(
         self,
@@ -119,8 +119,7 @@ class TensorServingClient:
         # stub = PredictionServiceStub(self._channel)
         request = GetModelMetadataRequest()
         request.model_spec.name = model_name
-        stub = PredictionServiceStub(self._channel)
         if model_version is not None:
             request.model_spec.version.value = model_version
         request.metadata_field.append("signature_def")
-        return stub.GetModelMetadata(request, timeout)
+        return self.stub.GetModelMetadata(request, timeout)
