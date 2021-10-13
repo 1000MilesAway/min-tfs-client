@@ -27,11 +27,8 @@ class TensorServingClient:
         self, host: str, port: int, credentials: Optional[grpc.ssl_channel_credentials] = None,
     ) -> None:
         self._host_address = f"{host}:{port}"
-        if credentials:
-            self._channel = grpc.secure_channel(self._host_address, credentials)
-        else:
-            self._channel = grpc.insecure_channel(self._host_address)
-        self.stub = PredictionServiceStub(self._channel)
+        with grpc.insecure_channel(self._host_address) as _channel:
+            self.stub = PredictionServiceStub(_channel)
 
     def _make_inference_request(
         self,
@@ -100,18 +97,20 @@ class TensorServingClient:
         }
         return self._make_inference_request(**request_params)
 
-    def model_status_request(
-        self,
-        model_name: str,
-        model_version: Optional[int] = None,
-        timeout: Optional[int] = 10,
-    ) -> GetModelStatusResponse:
-        stub = ModelServiceStub(self._channel)
-        request = GetModelStatusRequest()
-        request.model_spec.name = model_name
-        if model_version:
-            request.model_spec.version.value = model_version
-        return stub.GetModelStatus(request, timeout)
+    # def model_status_request(
+    #     self,
+    #     model_name: str,
+    #     model_version: Optional[int] = None,
+    #     timeout: Optional[int] = 10,
+    # ) -> GetModelStatusResponse:
+    #     stub = ModelServiceStub(self._channel)
+    #     request = GetModelStatusRequest()
+    #     request.model_spec.name = model_name
+    #     if model_version:
+    #         request.model_spec.version.value = model_version
+    #     result = stub.GetModelStatus(request, timeout)
+    #     del stub
+    #     return result
 
     def model_metadata_request(
         self,
@@ -119,10 +118,10 @@ class TensorServingClient:
         model_version: Optional[int] = None,
         timeout: Optional[int] = 10,
     ) -> GetModelMetadataResponse:
-        stub = PredictionServiceStub(self._channel)
+        # stub = PredictionServiceStub(self._channel)
         request = GetModelMetadataRequest()
         request.model_spec.name = model_name
         if model_version is not None:
             request.model_spec.version.value = model_version
         request.metadata_field.append("signature_def")
-        return stub.GetModelMetadata(request, timeout)
+        return self.stub.GetModelMetadata(request, timeout)
