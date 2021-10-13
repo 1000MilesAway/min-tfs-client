@@ -45,7 +45,7 @@ class TensorServingClient:
 
         for k, v in input_dict.items():
             request.inputs[k].CopyFrom(ndarray_to_tensor_proto(v))
-        return self.stub.Predict(request, 0)
+        return self.stub.Predict(request, 5)
 
     def predict_request(
         self,
