@@ -14,7 +14,7 @@ ResponseTypes = Union[PredictResponse, ClassificationResponse, RegressionRespons
 
 
 class TensorServingClient:
-    def __init__(self, host: str, port: int, credentials: Optional[grpc.ssl_channel_credentials] = None) -> None:
+    def __init__(self, host: str, port: int) -> None:
         self._host_address = f"{host}:{port}"
         _channel = grpc.insecure_channel(self._host_address)
         self.stub = PredictionServiceStub(_channel)
