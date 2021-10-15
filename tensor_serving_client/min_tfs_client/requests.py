@@ -42,7 +42,7 @@ class TensorServingClient:
         self,
         model_name: str,
         input_dict: Dict[str, np.ndarray],
-        timeout: float = 10.0,
+        timeout: float = 5.0,
         model_version: Optional[int] = None,
     ) -> PredictResponse:
         request_params: Dict[str, Any] = {
@@ -58,7 +58,7 @@ class TensorServingClient:
         self,
         model_name: str,
         input_dict: Dict[str, np.ndarray],
-        timeout: float = 10.0,
+        timeout: float = 5.0,
         model_version: Optional[int] = None,
     ) -> ClassificationResponse:
         request_params: Dict[str, Any] = {
@@ -90,7 +90,7 @@ class TensorServingClient:
         self,
         model_name: str,
         model_version: Optional[int] = None,
-        timeout: float = 10.0,
+        timeout: float = 5.0,
     ) -> GetModelMetadataResponse:
         request = GetModelMetadataRequest()
         request.model_spec.name = model_name
